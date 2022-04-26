@@ -80,18 +80,24 @@ class _ScoreboardState extends State<Scoreboard> {
             _addVertPadding(15),
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
-              child: Table(
-                border: TableBorder.all(),
-                columnWidths: _initColumns(maxSets),
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: <TableRow>[
-                  TableRow(
-                    children: _paintColumns(maxSets, team1Name, 1),
+              child: Container(
+                child: Table(
+                  //border: TableBorder.all(),
+                  border: TableBorder.symmetric(
+                    inside: BorderSide(width: 2, color: Colors.white),
+                    //outside: BorderSide(width: 1)
                   ),
-                  TableRow(
-                    children: _paintColumns(maxSets, team2Name, 2),
-                  ),
-                ],
+                  columnWidths: _initColumns(maxSets),
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: <TableRow>[
+                    TableRow(
+                      children: _paintColumns(maxSets, team1Name, 1),
+                    ),
+                    TableRow(
+                      children: _paintColumns(maxSets, team2Name, 2),
+                    ),
+                  ],
+                ),
               ),
             ),
             _addVertPadding(30),
@@ -398,38 +404,51 @@ class _ScoreboardState extends State<Scoreboard> {
 
   List<Widget>? _paintColumns(int sets, String teamName, int team) {
     List<Widget>? list = [];
-    list.add(_paintContainer(teamName, Colors.blue));
+    list.add(_paintContainer(teamName, Colors.blueGrey, Colors.white));
 
     for (int i = 0; i < sets; i++) {
       if (team == 1) {
-        list.add(_paintContainer(team1GameCount[i].toString(), Colors.green));
+        list.add(_paintContainer(team1GameCount[i].toString(),
+            Color.fromARGB(255, 104, 145, 188), Colors.white));
       } else {
-        list.add(_paintContainer(team2GameCount[i].toString(), Colors.green));
+        list.add(_paintContainer(team2GameCount[i].toString(),
+            Color.fromARGB(255, 104, 145, 188), Colors.white));
       }
     }
     if (team == 1) {
-      list.add(_paintContainer(team1SetCount.toString(), Colors.red));
+      list.add(_paintContainer(team1SetCount.toString(),
+          Color.fromARGB(255, 192, 86, 78), Colors.white));
     } else {
-      list.add(_paintContainer(team2SetCount.toString(), Colors.red));
+      list.add(_paintContainer(team2SetCount.toString(),
+          Color.fromARGB(255, 192, 86, 78), Colors.white));
     }
     if (team == 1) {
-      list.add(_paintContainer(team1CurrentGameScore, Colors.yellow));
+      list.add(_paintContainer(
+          team1CurrentGameScore, Colors.blueGrey, Colors.yellow));
     } else {
-      list.add(_paintContainer(team2CurrentGameScore, Colors.yellow));
+      list.add(_paintContainer(
+          team2CurrentGameScore, Colors.blueGrey, Colors.yellow));
     }
 
     return list;
   }
 
-  Container _paintContainer(String text, Color? color) {
+  Container _paintContainer(String text, Color? columnColor, Color? textColor) {
     return Container(
       height: columnHeight,
-      color: color,
+      //color: columnColor,
+      decoration: BoxDecoration(
+        color: columnColor,
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
       child: Align(
         alignment: Alignment.center,
         child: Text(
           text,
-          style: TextStyle(),
+          style: TextStyle(
+            color: textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
