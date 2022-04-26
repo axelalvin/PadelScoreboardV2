@@ -16,16 +16,19 @@ class _ScoreboardState extends State<Scoreboard> {
   static const double nameColumnWidth = 100.0;
   static const double scoreColumnWidth = 37.0;
 
-  int max_sets = 5;
-  bool golden_point = false;
+  static const int maxSets = 5;
+  static const bool goldenPoint = false;
 
   bool gameDeuce = false;
   bool setDeuce = false;
   bool tieBreak = false;
-  bool match_finished = false;
+  bool tieBreakDeuce = false;
+  int team1TieBreakScore = 0;
+  int team2TieBreakScore = 0;
+  bool matchFinished = false;
 
-  String team1 = 'ALV/PET';
-  String team2 = 'PET/ALV';
+  String team1Name = 'ALV/PET';
+  String team2Name = 'PET/ALV';
 
   int currSet = 0;
   List<int> team1GameCount = [];
@@ -45,7 +48,7 @@ class _ScoreboardState extends State<Scoreboard> {
     team1CurrentGameScore = scoreList[team1ScorePos].toString();
     team2CurrentGameScore = scoreList[team2ScorePos].toString();
 
-    for (int i = 0; i < max_sets; i++) {
+    for (int i = 0; i < maxSets; i++) {
       team1GameCount.add(0);
       team2GameCount.add(0);
     }
@@ -66,14 +69,14 @@ class _ScoreboardState extends State<Scoreboard> {
               padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
               child: Table(
                 border: TableBorder.all(),
-                columnWidths: _initColumns(max_sets),
+                columnWidths: _initColumns(maxSets),
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: <TableRow>[
                   TableRow(
-                    children: _paintColumns(max_sets, team1, 1),
+                    children: _paintColumns(maxSets, team1Name, 1),
                   ),
                   TableRow(
-                    children: _paintColumns(max_sets, team2, 2),
+                    children: _paintColumns(maxSets, team2Name, 2),
                   ),
                 ],
               ),
@@ -84,65 +87,9 @@ class _ScoreboardState extends State<Scoreboard> {
                   MainAxisAlignment.center, //Center Row contents horizontally,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  team1,
-                ),
-                _addHorizPadding(35),
-                Text(
-                  team2,
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, //Center Row contents horizontally,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  //style: style,
-                  onPressed: () {
-                    if (gameDeuce)
-                      _addDeucePoint(1);
-                    else if (!match_finished && !gameDeuce) _addPoint(1);
-                  },
-                  child: const Text('Point'),
-                ),
-                _addHorizPadding(20),
-                ElevatedButton(
-                  //style: style,
-                  onPressed: () {
-                    if (gameDeuce)
-                      _addDeucePoint(2);
-                    else if (!match_finished && !gameDeuce) _addPoint(2);
-                  },
-                  child: const Text('Point'),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, //Center Row contents horizontally,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  //style: style,
-                  onPressed: () {
-                    if (setDeuce)
-                      _addDeuceGame(1);
-                    else if (!match_finished && !setDeuce) _addGame(1);
-                  },
-                  child: const Text('Game'),
-                ),
-                _addHorizPadding(20),
-                ElevatedButton(
-                  //style: style,
-                  onPressed: () {
-                    if (setDeuce)
-                      _addDeuceGame(2);
-                    else if (!match_finished && !setDeuce) _addGame(2);
-                  },
-                  child: const Text('Game'),
-                ),
+                _addButtons(team1Name, 1),
+                _addHorizPadding(30),
+                _addButtons(team2Name, 2),
               ],
             ),
           ],
@@ -152,30 +99,35 @@ class _ScoreboardState extends State<Scoreboard> {
   }
 
   void _addPoint(int team) {
-    setState(() {
-      if (team == 1) {
-        team1ScorePos++;
-        if (scoreList[team1ScorePos] == 41) {
-          //end of game
-          _addGame(team);
+    if (gameDeuce) {
+      _addDeucePoint(team);
+    } else {
+      setState(() {
+        if (team == 1) {
+          team1ScorePos++;
+          if (scoreList[team1ScorePos] == 41) {
+            //end of game
+            _addGame(team);
+          } else {
+            team1CurrentGameScore = scoreList[team1ScorePos].toString();
+          }
         } else {
-          team1CurrentGameScore = scoreList[team1ScorePos].toString();
+          team2ScorePos++;
+          if (scoreList[team2ScorePos] == 41) {
+            //end of game
+            _addGame(team);
+          } else {
+            team2CurrentGameScore = scoreList[team2ScorePos].toString();
+          }
         }
-      } else {
-        team2ScorePos++;
-        if (scoreList[team2ScorePos] == 41) {
-          //end of game
-          _addGame(team);
-        } else {
-          team2CurrentGameScore = scoreList[team2ScorePos].toString();
+        if (!goldenPoint) {
+          if (scoreList[team1ScorePos] == 40 &&
+              scoreList[team2ScorePos] == 40) {
+            gameDeuce = true;
+          }
         }
-      }
-      if (!golden_point) {
-        if (scoreList[team1ScorePos] == 40 && scoreList[team2ScorePos] == 40) {
-          gameDeuce = true;
-        }
-      }
-    });
+      });
+    }
   }
 
   void _addDeucePoint(int team) {
@@ -232,43 +184,175 @@ class _ScoreboardState extends State<Scoreboard> {
   }
 
   void _addGame(int team) {
+    if (setDeuce) {
+      _addDeuceGame(team);
+    } else {
+      setState(() {
+        _resetPoints();
+        if (team == 1) {
+          team1GameCount[currSet]++;
+          if (team1GameCount[currSet] == 6) {
+            _addSet(team);
+          }
+        } else {
+          team2GameCount[currSet]++;
+          if (team2GameCount[currSet] == 6) {
+            _addSet(team);
+          }
+        }
+
+        if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 5) {
+          setDeuce = true;
+        }
+      });
+    }
+  }
+
+  void _addDeuceGame(int team) {
+    bool team1adv = false;
+    bool team2adv = false;
+    if (team1GameCount[currSet] == 6 && team2GameCount[currSet] == 5) {
+      team1adv = true;
+    }
+    if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 6) {
+      team2adv = true;
+    }
     setState(() {
       _resetPoints();
       if (team == 1) {
-        team1GameCount[currSet]++;
-        if (team1GameCount[currSet] == 6) {
-          if (currSet < max_sets - 1) {
-            team1SetCount++;
-            currSet++;
-          } else {
-            team1SetCount++;
-            match_finished = true;
-          }
+        if (team1adv) {
+          team1GameCount[currSet]++;
+          team1SetCount++;
+          currSet++;
+          setDeuce = false;
+        } else if (team2adv) {
+          //tie break
+          setDeuce = false;
+          tieBreak = true;
+          team1GameCount[currSet]++;
+        } else {
+          team1GameCount[currSet]++;
         }
       } else {
-        team2GameCount[currSet]++;
-        if (team2GameCount[currSet] == 6) {
-          if (currSet < max_sets - 1) {
-            team2SetCount++;
-            currSet++;
-          } else {
-            team2SetCount++;
-            match_finished = true;
-          }
+        if (team2adv) {
+          team2GameCount[currSet]++;
+          team2SetCount++;
+          currSet++;
+          setDeuce = false;
+        } else if (team1adv) {
+          //tie break
+          setDeuce = false;
+          tieBreak = true;
+          team2GameCount[currSet]++;
+        } else {
+          team2GameCount[currSet]++;
         }
-      }
-
-      if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 5) {
-        setDeuce = true;
       }
     });
   }
 
-  void _addDeuceGame(int team) {
+  void _addTieBreakPoint(int team) {
+    if (tieBreakDeuce) {
+      _addTieBreakDeucePoint(team);
+    } else {
+      setState(() {
+        if (team == 1) {
+          team1TieBreakScore++;
+          team1CurrentGameScore = team1TieBreakScore.toString();
+          if (team1TieBreakScore == 7 && !tieBreakDeuce) {
+            _tieBreakFinished(team);
+          }
+        } else {
+          team2TieBreakScore++;
+          team2CurrentGameScore = team2TieBreakScore.toString();
+          if (team2TieBreakScore == 7 && !tieBreakDeuce) {
+            _tieBreakFinished(team);
+          }
+        }
+      });
+      if (team1TieBreakScore == 6 && team2TieBreakScore == 6) {
+        tieBreakDeuce = true;
+      }
+    }
+  }
+
+  void _addTieBreakDeucePoint(int team) {
+    bool deuce = false, team1adv = false, team2adv = false;
+    String adv = 'Adv';
+    if (team1CurrentGameScore == '6' && team2CurrentGameScore == '6') {
+      deuce = true;
+    }
+    if (team1CurrentGameScore == adv) {
+      team1adv = true;
+    }
+    if (team2CurrentGameScore == adv) {
+      team2adv = true;
+    }
     setState(() {
-      _resetPoints();
       if (team == 1) {
-      } else {}
+        if (deuce) {
+          team1CurrentGameScore = adv;
+          team2CurrentGameScore = '';
+        } else {
+          if (team1adv) {
+            _tieBreakFinished(team);
+            tieBreakDeuce = false;
+          } else {
+            team1CurrentGameScore = team1TieBreakScore.toString();
+            team2CurrentGameScore = team2TieBreakScore.toString();
+          }
+        }
+      } else {
+        if (deuce) {
+          team2CurrentGameScore = adv;
+          team1CurrentGameScore = '';
+        } else {
+          if (team2adv) {
+            _tieBreakFinished(team);
+            tieBreakDeuce = false;
+          } else {
+            team1CurrentGameScore = team1TieBreakScore.toString();
+            team2CurrentGameScore = team2TieBreakScore.toString();
+          }
+        }
+      }
+    });
+  }
+
+  void _tieBreakFinished(int team) {
+    if (team == 1) {
+      team1GameCount[currSet]++;
+      _addSet(team);
+    } else {
+      team2GameCount[currSet]++;
+      _addSet(team);
+    }
+
+    currSet++;
+    team1TieBreakScore = 0;
+    team2TieBreakScore = 0;
+    tieBreak = false;
+    _resetPoints();
+  }
+
+  void _addSet(int team) {
+    int setsToWin = (maxSets / 2).ceil();
+    setState(() {
+      if (team == 1) {
+        team1SetCount++;
+        if (team1SetCount == setsToWin) {
+          matchFinished = true;
+        } else {
+          currSet++;
+        }
+      } else {
+        team2SetCount++;
+        if (team2SetCount == setsToWin) {
+          matchFinished = true;
+        } else {
+          currSet++;
+        }
+      }
     });
   }
 
@@ -297,6 +381,7 @@ class _ScoreboardState extends State<Scoreboard> {
         8: FixedColumnWidth(scoreColumnWidth),
       };
     }
+    return null;
   }
 
   List<Widget>? _paintColumns(int sets, String teamName, int team) {
@@ -334,6 +419,76 @@ class _ScoreboardState extends State<Scoreboard> {
           text,
           style: TextStyle(),
         ),
+      ),
+    );
+  }
+
+  Center _addButtons(String teamName, int team) {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          Text(
+            teamName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          _addVertPadding(5),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.yellow,
+            ),
+            onPressed: () {
+              if (tieBreak) {
+                _addTieBreakPoint(team);
+              } else if (!matchFinished) {
+                _addPoint(team);
+              }
+            },
+            child: const Text(
+              'Add point',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          _addVertPadding(10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.green,
+            ),
+            onPressed: () {
+              if (tieBreak) {
+                _addTieBreakPoint(team);
+              } else if (!matchFinished) {
+                _addGame(team);
+              }
+            },
+            child: const Text(
+              'Add game',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          _addVertPadding(10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
+            onPressed: () {
+              if (!matchFinished) {
+                _addSet(team);
+              }
+            },
+            child: const Text(
+              'Add set',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
