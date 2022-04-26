@@ -236,6 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: ElevatedButton(
                   child: const Text('Start match'),
                   onPressed: () {
+                    _getInitals(player1NameController.text);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -243,8 +244,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 title: 'Match',
                                 maxSets: _numberOfSets,
                                 goldenPoint: _goldenPoint,
-                                team1Name: 'ALV/PET',
-                                team2Name: 'PET/ALV',
+                                team1Name: _formatTeamName(
+                                    _getInitals(player1NameController.text),
+                                    _getInitals(player2NameController.text)),
+                                team2Name: _formatTeamName(
+                                    _getInitals(player3NameController.text),
+                                    _getInitals(player4NameController.text)),
                               )),
                     );
                     // Navigate to second route when tapped.
@@ -256,6 +261,23 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  String _getInitals(String name) {
+    final nameSplit = name.split(' ');
+    if (nameSplit.isNotEmpty) {
+      String inital = '';
+      for (int i = 0; i < nameSplit[nameSplit.length - 1].length; i++) {
+        inital += nameSplit[nameSplit.length - 1][i];
+        if (inital.length == 3) break;
+      }
+      return inital.toUpperCase();
+    }
+    return 'XXX';
+  }
+
+  String _formatTeamName(String player1Initials, String player2Initials) {
+    return player1Initials + '/' + player2Initials;
   }
 
   Padding _addVertPadding(double height) {
