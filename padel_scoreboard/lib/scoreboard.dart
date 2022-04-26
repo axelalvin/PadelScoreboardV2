@@ -47,9 +47,9 @@ class _ScoreboardState extends State<Scoreboard> {
   int team2SetCount = 0;
 
   List<int> scoreList = [0, 15, 30, 40, 41];
-  String team1CurrentGameScore = '0';
+  late String team1CurrentGameScore;
   int team1ScorePos = 0;
-  String team2CurrentGameScore = '0';
+  late String team2CurrentGameScore;
   int team2ScorePos = 0;
 
   @override
@@ -110,6 +110,24 @@ class _ScoreboardState extends State<Scoreboard> {
                 _addHorizPadding(30),
                 _addButtons(team2Name, 2),
               ],
+            ),
+            _addVertPadding(30),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red,
+              ),
+              onPressed: () {
+                if (!matchFinished) {
+                  //_addSet(team);
+                }
+                _resetScoreboard();
+              },
+              child: const Text(
+                'Reset scoreboard',
+                style: TextStyle(
+                  color: Colors.black,
+                ),
+              ),
             ),
           ],
         ),
@@ -374,6 +392,66 @@ class _ScoreboardState extends State<Scoreboard> {
     });
   }
 
+  void _removePoint(int team) {
+    setState(() {
+      if (team == 1 && team1ScorePos > 0) {
+        if (team1CurrentGameScore == 'Adv') {
+          team1CurrentGameScore = scoreList[team1ScorePos].toString();
+          team2CurrentGameScore = scoreList[team2ScorePos].toString();
+        } else {
+          team1ScorePos--;
+          team1CurrentGameScore = scoreList[team1ScorePos].toString();
+        }
+      } else if (team == 2 && team2ScorePos > 0) {
+        if (team2CurrentGameScore == 'Adv') {
+          team2CurrentGameScore = scoreList[team2ScorePos].toString();
+          team1CurrentGameScore = scoreList[team1ScorePos].toString();
+        } else {
+          team2ScorePos--;
+          team2CurrentGameScore = scoreList[team2ScorePos].toString();
+        }
+      }
+    });
+  }
+
+  void _removeGame(int team) {
+    setState(() {
+      if (team == 1 && team1GameCount[currSet] > 0) {
+        team1GameCount[currSet]--;
+      } else if (team == 2 && team2GameCount[currSet] > 0) {
+        team2GameCount[currSet]--;
+      }
+    });
+  }
+
+  void _resetScoreboard() {
+    setState(() {
+      gameDeuce = false;
+      setDeuce = false;
+      tieBreak = false;
+      tieBreakDeuce = false;
+      team1TieBreakScore = 0;
+      team2TieBreakScore = 0;
+      matchFinished = false;
+
+      currSet = 0;
+
+      team1SetCount = 0;
+      team2SetCount = 0;
+
+      team1ScorePos = 0;
+      team2ScorePos = 0;
+
+      team1CurrentGameScore = scoreList[team1ScorePos].toString();
+      team2CurrentGameScore = scoreList[team2ScorePos].toString();
+
+      for (int i = 0; i < maxSets; i++) {
+        team1GameCount[i] = 0;
+        team2GameCount[i] = 0;
+      }
+    });
+  }
+
   Map<int, TableColumnWidth>? _initColumns(int sets) {
     if (sets == 3) {
       return const <int, TableColumnWidth>{
@@ -460,14 +538,14 @@ class _ScoreboardState extends State<Scoreboard> {
         children: <Widget>[
           Text(
             teamName,
-            style: TextStyle(
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
           ),
           _addVertPadding(5),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.yellow,
+              primary: Colors.green,
             ),
             onPressed: () {
               if (tieBreak) {
@@ -509,11 +587,30 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             onPressed: () {
               if (!matchFinished) {
-                _addSet(team);
+                //_addSet(team);
               }
+              _removePoint(team);
             },
             child: const Text(
-              'Add set',
+              'Remove point',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          _addVertPadding(10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: Colors.red,
+            ),
+            onPressed: () {
+              if (!matchFinished) {
+                //_addSet(team);
+              }
+              _removeGame(team);
+            },
+            child: const Text(
+              'Remove game',
               style: TextStyle(
                 color: Colors.black,
               ),
