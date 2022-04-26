@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 
-import 'main.dart';
-
 class Scoreboard extends StatefulWidget {
-  const Scoreboard({Key? key, required this.title}) : super(key: key);
+  const Scoreboard({
+    Key? key,
+    required this.title,
+    required this.maxSets,
+    required this.goldenPoint,
+    required this.team1Name,
+    required this.team2Name,
+  }) : super(key: key);
 
   final String title;
+  final int maxSets;
+  final bool goldenPoint;
+  final String team1Name;
+  final String team2Name;
 
   @override
   State<Scoreboard> createState() => _ScoreboardState();
@@ -16,8 +25,11 @@ class _ScoreboardState extends State<Scoreboard> {
   static const double nameColumnWidth = 100.0;
   static const double scoreColumnWidth = 37.0;
 
-  static const int maxSets = 5;
-  static const bool goldenPoint = false;
+  late int maxSets;
+  late bool goldenPoint = false;
+
+  late String team1Name;
+  late String team2Name;
 
   bool gameDeuce = false;
   bool setDeuce = false;
@@ -26,9 +38,6 @@ class _ScoreboardState extends State<Scoreboard> {
   int team1TieBreakScore = 0;
   int team2TieBreakScore = 0;
   bool matchFinished = false;
-
-  String team1Name = 'ALV/PET';
-  String team2Name = 'PET/ALV';
 
   int currSet = 0;
   List<int> team1GameCount = [];
@@ -45,6 +54,10 @@ class _ScoreboardState extends State<Scoreboard> {
 
   @override
   void initState() {
+    maxSets = widget.maxSets;
+    goldenPoint = widget.goldenPoint;
+    team1Name = widget.team1Name;
+    team2Name = widget.team2Name;
     team1CurrentGameScore = scoreList[team1ScorePos].toString();
     team2CurrentGameScore = scoreList[team2ScorePos].toString();
 
@@ -328,7 +341,6 @@ class _ScoreboardState extends State<Scoreboard> {
       _addSet(team);
     }
 
-    currSet++;
     team1TieBreakScore = 0;
     team2TieBreakScore = 0;
     tieBreak = false;
