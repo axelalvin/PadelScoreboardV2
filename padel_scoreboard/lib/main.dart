@@ -41,10 +41,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
-  final player1NameController = TextEditingController();
-  final player2NameController = TextEditingController();
-  final player3NameController = TextEditingController();
-  final player4NameController = TextEditingController();
+
+  final List<TextEditingController> _playerNameControllers = [
+    for (int i = 0; i < 4; i++) TextEditingController()
+  ];
 
   int _numberOfSets = 3;
   bool _goldenPoint = true;
@@ -66,11 +66,11 @@ class _MyHomePageState extends State<MyHomePage> {
               _addTitle('Enter players', 20),
               _addVertPadding(20),
               _addTitle('Team 1', 15),
-              _addTeamContainer(player1NameController, player2NameController,
-                  'Player 1 Name', 'Player 2 Name'),
+              _addTeamContainer(_playerNameControllers[0],
+                  _playerNameControllers[1], 'Player 1 Name', 'Player 2 Name'),
               _addTitle('Team 2', 15),
-              _addTeamContainer(player3NameController, player4NameController,
-                  'Player 3 Name', 'Player 4 Name'),
+              _addTeamContainer(_playerNameControllers[2],
+                  _playerNameControllers[3], 'Player 3 Name', 'Player 4 Name'),
               _addVertPadding(20),
               _addTitle('Select game mode', 20),
               _addVertPadding(10),
@@ -94,7 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: ElevatedButton(
                   child: const Text('Start match'),
                   onPressed: () {
-                    _getInitals(player1NameController.text);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -103,11 +102,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                 maxSets: _numberOfSets,
                                 goldenPoint: _goldenPoint,
                                 team1Name: _formatTeamName(
-                                    _getInitals(player1NameController.text),
-                                    _getInitals(player2NameController.text)),
+                                    _getInitals(_playerNameControllers[0].text),
+                                    _getInitals(
+                                        _playerNameControllers[1].text)),
                                 team2Name: _formatTeamName(
-                                    _getInitals(player3NameController.text),
-                                    _getInitals(player4NameController.text)),
+                                    _getInitals(_playerNameControllers[2].text),
+                                    _getInitals(
+                                        _playerNameControllers[3].text)),
                               )),
                     );
                     // Navigate to second route when tapped.
