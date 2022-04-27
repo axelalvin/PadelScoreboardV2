@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: const EdgeInsets.all(4),
             children: <Widget>[
               const Text(
-                'Select game mode',
+                'Enter players',
                 textAlign: TextAlign.center,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -141,6 +141,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              _addVertPadding(20),
+              const Text(
+                'Select game mode',
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _addVertPadding(10),
               const Text(
                 'Number of sets',
                 textAlign: TextAlign.center,
