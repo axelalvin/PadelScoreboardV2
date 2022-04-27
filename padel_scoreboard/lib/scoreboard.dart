@@ -405,11 +405,10 @@ class _ScoreboardState extends State<Scoreboard> {
   }
 
   void _addSet(int team) {
-    int setsToWin = (maxSets / 2).ceil();
     setState(() {
       if (team == 1) {
         team1SetCount++;
-        if (team1SetCount == setsToWin) {
+        if (team1SetCount == maxSets) {
           matchFinished = true;
         } else {
           currSet++;
@@ -421,7 +420,7 @@ class _ScoreboardState extends State<Scoreboard> {
         }
       } else {
         team2SetCount++;
-        if (team2SetCount == setsToWin) {
+        if (team2SetCount == maxSets) {
           matchFinished = true;
         } else {
           currSet++;
