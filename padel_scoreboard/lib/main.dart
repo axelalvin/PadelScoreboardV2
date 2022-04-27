@@ -63,184 +63,31 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView(
             padding: const EdgeInsets.all(4),
             children: <Widget>[
-              const Text(
-                'Enter players',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _addTitle('Enter players', 20),
               _addVertPadding(20),
-              const Text(
-                'Team 1',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                //padding: EdgeInsets.all(12),
-                padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                      controller: player1NameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Player 1 Name',
-                        isDense: true, // Added this
-                        contentPadding: EdgeInsets.all(8), // Added this
-                      ),
-                    ),
-                    _addVertPadding(10),
-                    TextField(
-                      controller: player2NameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Player 2 Name',
-                        isDense: true, // Added this
-                        contentPadding: EdgeInsets.all(8), // Added this
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Text(
-                'Team 2',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                //padding: EdgeInsets.all(12),
-                padding: EdgeInsets.fromLTRB(30, 12, 30, 12),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                      controller: player3NameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Player 1 Name',
-                        isDense: true, // Added this
-                        contentPadding: EdgeInsets.all(8), // Added this
-                      ),
-                    ),
-                    _addVertPadding(10),
-                    TextField(
-                      controller: player4NameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Player 2 Name',
-                        isDense: true, // Added this
-                        contentPadding: EdgeInsets.all(8), // Added this
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _addTitle('Team 1', 15),
+              _addTeamContainer(player1NameController, player2NameController,
+                  'Player 1 Name', 'Player 2 Name'),
+              _addTitle('Team 2', 15),
+              _addTeamContainer(player3NameController, player4NameController,
+                  'Player 3 Name', 'Player 4 Name'),
               _addVertPadding(20),
-              const Text(
-                'Select game mode',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _addTitle('Select game mode', 20),
               _addVertPadding(10),
-              const Text(
-                'Number of sets',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _addTitle('Number of sets', 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment
                     .center, //Center Row contents horizontally,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Radio<int>(
-                    value: 3,
-                    groupValue: _numberOfSets,
-                    onChanged: (int? value) {
-                      setState(() {
-                        _numberOfSets = value!;
-                      });
-                    },
-                  ),
-                  const Text(
-                    '3',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  _addHorizPadding(5),
-                  Radio<int>(
-                    value: 5,
-                    groupValue: _numberOfSets,
-                    onChanged: (int? value) {
-                      setState(() {
-                        _numberOfSets = value!;
-                      });
-                    },
-                  ),
-                  const Text(
-                    '5',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                children: _addIntRadios(),
               ),
               _addVertPadding(10),
-              const Text(
-                'Deuce mode',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              _addTitle('Deuce mode', 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment
                     .center, //Center Row contents horizontally,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Radio<bool>(
-                    value: true,
-                    groupValue: _goldenPoint,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _goldenPoint = value!;
-                      });
-                    },
-                  ),
-                  const Text(
-                    'Golden point',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Radio<bool>(
-                    value: false,
-                    groupValue: _goldenPoint,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        _goldenPoint = value!;
-                      });
-                    },
-                  ),
-                  const Text(
-                    'Advantage',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                children: _addBoolRadios(),
               ),
               _addVertPadding(20),
               Center(
@@ -289,6 +136,110 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _formatTeamName(String player1Initials, String player2Initials) {
     return player1Initials + '/' + player2Initials;
+  }
+
+  Text _addTitle(String titleText, double fontSize) {
+    return Text(
+      titleText,
+      textAlign: TextAlign.center,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  List<Widget> _addIntRadios() {
+    return <Widget>[
+      Radio<int>(
+        value: 3,
+        groupValue: _numberOfSets,
+        onChanged: (int? value) {
+          setState(() {
+            _numberOfSets = value!;
+          });
+        },
+      ),
+      _addRadioTitle('3'),
+      _addHorizPadding(5),
+      Radio<int>(
+        value: 5,
+        groupValue: _numberOfSets,
+        onChanged: (int? value) {
+          setState(() {
+            _numberOfSets = value!;
+          });
+        },
+      ),
+      _addRadioTitle('5'),
+    ];
+  }
+
+  List<Widget> _addBoolRadios() {
+    return <Widget>[
+      Radio<bool>(
+        value: true,
+        groupValue: _goldenPoint,
+        onChanged: (bool? value) {
+          setState(() {
+            _goldenPoint = value!;
+          });
+        },
+      ),
+      _addRadioTitle('Golden point'),
+      _addHorizPadding(5),
+      Radio<bool>(
+        value: false,
+        groupValue: _goldenPoint,
+        onChanged: (bool? value) {
+          setState(() {
+            _goldenPoint = value!;
+          });
+        },
+      ),
+      _addRadioTitle('Advantage'),
+    ];
+  }
+
+  Text _addRadioTitle(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  TextField _addPlayerNameTextField(
+      TextEditingController nameController, String playerName) {
+    return TextField(
+      controller: nameController,
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: playerName,
+        isDense: true, // Added this
+        contentPadding: const EdgeInsets.all(8), // Added this
+      ),
+    );
+  }
+
+  Container _addTeamContainer(
+      TextEditingController name1Controller,
+      TextEditingController name2Controller,
+      String player1Name,
+      String player2Name) {
+    return Container(
+      //padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(30, 12, 30, 12),
+      child: Column(
+        children: <Widget>[
+          _addPlayerNameTextField(name1Controller, player1Name),
+          _addVertPadding(10),
+          _addPlayerNameTextField(name2Controller, player2Name),
+        ],
+      ),
+    );
   }
 
   Padding _addVertPadding(double height) {

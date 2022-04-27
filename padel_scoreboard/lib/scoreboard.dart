@@ -114,12 +114,9 @@ class _ScoreboardState extends State<Scoreboard> {
             _addVertPadding(30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                primary: Colors.red,
+                primary: const Color.fromARGB(255, 192, 86, 78),
               ),
               onPressed: () {
-                if (!matchFinished) {
-                  //_addSet(team);
-                }
                 _resetScoreboard();
               },
               child: const Text(
@@ -583,7 +580,7 @@ class _ScoreboardState extends State<Scoreboard> {
           _addVertPadding(10),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.red,
+              primary: Color.fromARGB(255, 192, 86, 78),
             ),
             onPressed: () {
               if (!matchFinished) {
@@ -601,7 +598,7 @@ class _ScoreboardState extends State<Scoreboard> {
           _addVertPadding(10),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              primary: Colors.red,
+              primary: Color.fromARGB(255, 192, 86, 78),
             ),
             onPressed: () {
               if (!matchFinished) {
