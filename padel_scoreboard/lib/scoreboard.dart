@@ -31,6 +31,8 @@ class _ScoreboardState extends State<Scoreboard> {
   late String team1Name;
   late String team2Name;
 
+  bool initServe = true;
+  late bool team1Serve;
   bool gameDeuce = false;
   bool setDeuce = false;
   bool tieBreak = false;
@@ -58,6 +60,8 @@ class _ScoreboardState extends State<Scoreboard> {
     goldenPoint = widget.goldenPoint;
     team1Name = widget.team1Name;
     team2Name = widget.team2Name;
+
+    team1Serve = initServe;
     team1CurrentGameScore = scoreList[team1ScorePos].toString();
     team2CurrentGameScore = scoreList[team2ScorePos].toString();
 
@@ -82,19 +86,33 @@ class _ScoreboardState extends State<Scoreboard> {
               padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
               child: Container(
                 child: Table(
-                  //border: TableBorder.all(),
                   border: TableBorder.symmetric(
                     inside: BorderSide(width: 2, color: Colors.white),
-                    //outside: BorderSide(width: 1)
                   ),
                   columnWidths: _initColumns(maxSets),
                   defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                   children: <TableRow>[
                     TableRow(
-                      children: _paintColumns(maxSets, team1Name, 1),
+                      children: () {
+                        if (team1Serve) {
+                          return _paintColumns(
+                              maxSets, team1Name, 1, Colors.yellow);
+                        } else {
+                          return _paintColumns(
+                              maxSets, team1Name, 1, Colors.white);
+                        }
+                      }(),
                     ),
                     TableRow(
-                      children: _paintColumns(maxSets, team2Name, 2),
+                      children: () {
+                        if (!team1Serve) {
+                          return _paintColumns(
+                              maxSets, team2Name, 2, Colors.yellow);
+                        } else {
+                          return _paintColumns(
+                              maxSets, team2Name, 2, Colors.white);
+                        }
+                      }(),
                     ),
                   ],
                 ),
@@ -222,6 +240,7 @@ class _ScoreboardState extends State<Scoreboard> {
       _addDeuceGame(team);
     } else {
       setState(() {
+        _swapServe();
         _resetPoints();
         if (team == 1) {
           team1GameCount[currSet]++;
@@ -256,29 +275,31 @@ class _ScoreboardState extends State<Scoreboard> {
       if (team == 1) {
         if (team1adv) {
           team1GameCount[currSet]++;
-          team1SetCount++;
-          currSet++;
+          _addSet(1);
           setDeuce = false;
         } else if (team2adv) {
           //tie break
+          _swapServe();
           setDeuce = false;
           tieBreak = true;
           team1GameCount[currSet]++;
         } else {
+          _swapServe();
           team1GameCount[currSet]++;
         }
       } else {
         if (team2adv) {
           team2GameCount[currSet]++;
-          team2SetCount++;
-          currSet++;
+          _addSet(2);
           setDeuce = false;
         } else if (team1adv) {
           //tie break
+          _swapServe();
           setDeuce = false;
           tieBreak = true;
           team2GameCount[currSet]++;
         } else {
+          _swapServe();
           team2GameCount[currSet]++;
         }
       }
@@ -308,6 +329,21 @@ class _ScoreboardState extends State<Scoreboard> {
         tieBreakDeuce = true;
       }
     }
+  }
+
+  void _addTieBreakGame(int team) {
+    setState(() {
+      tieBreak = false;
+      _swapServe();
+      _resetPoints();
+      if (team == 1) {
+        team1GameCount[currSet]++;
+        _addSet(team);
+      } else {
+        team2GameCount[currSet]++;
+        _addSet(2);
+      }
+    });
   }
 
   void _addTieBreakDeucePoint(int team) {
@@ -377,6 +413,11 @@ class _ScoreboardState extends State<Scoreboard> {
           matchFinished = true;
         } else {
           currSet++;
+          if (currSet.isEven) {
+            _setServe(initServe);
+          } else {
+            _setServe(!initServe);
+          }
         }
       } else {
         team2SetCount++;
@@ -384,39 +425,57 @@ class _ScoreboardState extends State<Scoreboard> {
           matchFinished = true;
         } else {
           currSet++;
+          if (currSet.isEven) {
+            _setServe(initServe);
+          } else {
+            _setServe(!initServe);
+          }
         }
       }
     });
   }
 
   void _removePoint(int team) {
-    setState(() {
-      if (team == 1 && team1ScorePos > 0) {
-        if (team1CurrentGameScore == 'Adv') {
-          team1CurrentGameScore = scoreList[team1ScorePos].toString();
-          team2CurrentGameScore = scoreList[team2ScorePos].toString();
-        } else {
-          team1ScorePos--;
-          team1CurrentGameScore = scoreList[team1ScorePos].toString();
+    if (!tieBreak) {
+      setState(() {
+        if (team == 1 && team1ScorePos > 0) {
+          if (team1CurrentGameScore == 'Adv') {
+            team1CurrentGameScore = scoreList[team1ScorePos].toString();
+            team2CurrentGameScore = scoreList[team2ScorePos].toString();
+          } else {
+            team1ScorePos--;
+            team1CurrentGameScore = scoreList[team1ScorePos].toString();
+          }
+        } else if (team == 2 && team2ScorePos > 0) {
+          if (team2CurrentGameScore == 'Adv') {
+            team2CurrentGameScore = scoreList[team2ScorePos].toString();
+            team1CurrentGameScore = scoreList[team1ScorePos].toString();
+          } else {
+            team2ScorePos--;
+            team2CurrentGameScore = scoreList[team2ScorePos].toString();
+          }
         }
-      } else if (team == 2 && team2ScorePos > 0) {
-        if (team2CurrentGameScore == 'Adv') {
-          team2CurrentGameScore = scoreList[team2ScorePos].toString();
-          team1CurrentGameScore = scoreList[team1ScorePos].toString();
-        } else {
-          team2ScorePos--;
-          team2CurrentGameScore = scoreList[team2ScorePos].toString();
-        }
-      }
-    });
+      });
+    }
   }
 
   void _removeGame(int team) {
     setState(() {
-      if (team == 1 && team1GameCount[currSet] > 0) {
-        team1GameCount[currSet]--;
-      } else if (team == 2 && team2GameCount[currSet] > 0) {
-        team2GameCount[currSet]--;
+      if (tieBreak) {
+        tieBreak = false;
+        setDeuce = true;
+        if (tieBreakDeuce) tieBreakDeuce = false;
+        if (team == 1 && team1GameCount[currSet] > 0) {
+          team1GameCount[currSet]--;
+        } else if (team == 2 && team2GameCount[currSet] > 0) {
+          team2GameCount[currSet]--;
+        }
+      } else {
+        if (team == 1 && team1GameCount[currSet] > 0) {
+          team1GameCount[currSet]--;
+        } else if (team == 2 && team2GameCount[currSet] > 0) {
+          team2GameCount[currSet]--;
+        }
       }
     });
   }
@@ -442,11 +501,21 @@ class _ScoreboardState extends State<Scoreboard> {
       team1CurrentGameScore = scoreList[team1ScorePos].toString();
       team2CurrentGameScore = scoreList[team2ScorePos].toString();
 
+      team1Serve = initServe;
+
       for (int i = 0; i < maxSets; i++) {
         team1GameCount[i] = 0;
         team2GameCount[i] = 0;
       }
     });
+  }
+
+  void _setServe(bool setServe) {
+    team1Serve = setServe;
+  }
+
+  void _swapServe() {
+    team1Serve = !team1Serve;
   }
 
   Map<int, TableColumnWidth>? _initColumns(int sets) {
@@ -477,9 +546,10 @@ class _ScoreboardState extends State<Scoreboard> {
     return null;
   }
 
-  List<Widget>? _paintColumns(int sets, String teamName, int team) {
+  List<Widget>? _paintColumns(
+      int sets, String teamName, int team, Color teamNameColor) {
     List<Widget>? list = [];
-    list.add(_paintContainer(teamName, Colors.blueGrey, Colors.white));
+    list.add(_paintContainer(teamName, Colors.blueGrey, teamNameColor));
 
     for (int i = 0; i < sets; i++) {
       if (team == 1) {
@@ -514,7 +584,7 @@ class _ScoreboardState extends State<Scoreboard> {
       //color: columnColor,
       decoration: BoxDecoration(
         color: columnColor,
-        borderRadius: BorderRadius.all(Radius.circular(4)),
+        borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
       child: Align(
         alignment: Alignment.center,
@@ -565,7 +635,7 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             onPressed: () {
               if (tieBreak) {
-                _addTieBreakPoint(team);
+                _addTieBreakGame(team);
               } else if (!matchFinished) {
                 _addGame(team);
               }
