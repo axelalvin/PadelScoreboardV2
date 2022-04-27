@@ -127,18 +127,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String _getInitals(String name) {
     final nameSplit = name.split(' ');
+    if (nameSplit.last.isEmpty) {
+      nameSplit.remove(nameSplit.last);
+    }
     if (nameSplit.isNotEmpty) {
       String inital = '';
-      if (nameSplit.last.isEmpty) {
-        nameSplit.remove(nameSplit.last);
-      }
       for (int i = 0; i < nameSplit.last.length; i++) {
         inital += nameSplit.last[i];
         if (inital.length == 3) break;
       }
       return inital.toUpperCase();
     }
-    return 'XXX';
+    return '';
   }
 
   String _formatTeamName(String player1Initials, String player2Initials) {
