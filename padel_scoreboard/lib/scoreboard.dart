@@ -244,18 +244,20 @@ class _ScoreboardState extends State<Scoreboard> {
         _resetPoints();
         if (team == 1) {
           team1GameCount[currSet]++;
+          if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 5) {
+            setDeuce = true;
+          }
           if (team1GameCount[currSet] == 6) {
             _addSet(team);
           }
         } else {
           team2GameCount[currSet]++;
+          if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 5) {
+            setDeuce = true;
+          }
           if (team2GameCount[currSet] == 6) {
             _addSet(team);
           }
-        }
-
-        if (team1GameCount[currSet] == 5 && team2GameCount[currSet] == 5) {
-          setDeuce = true;
         }
       });
     }
@@ -408,7 +410,7 @@ class _ScoreboardState extends State<Scoreboard> {
     setState(() {
       if (team == 1) {
         team1SetCount++;
-        if (team1SetCount == maxSets) {
+        if (team1SetCount + team2SetCount == maxSets) {
           matchFinished = true;
         } else {
           currSet++;
@@ -420,7 +422,7 @@ class _ScoreboardState extends State<Scoreboard> {
         }
       } else {
         team2SetCount++;
-        if (team2SetCount == maxSets) {
+        if (team2SetCount + team2SetCount == maxSets) {
           matchFinished = true;
         } else {
           currSet++;
