@@ -70,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   _playerNameControllers[1], 'Player 1 Name', 'Player 2 Name'),
               _addTitle('Team 2', 15),
               _addTeamContainer(_playerNameControllers[2],
-                  _playerNameControllers[3], 'Player 3 Name', 'Player 4 Name'),
+                  _playerNameControllers[3], 'Player 1 Name', 'Player 2 Name'),
               _addVertPadding(20),
               _addTitle('Select game mode', 20),
               _addVertPadding(10),
@@ -94,24 +94,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: ElevatedButton(
                   child: const Text('Start match'),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Scoreboard(
-                                title: 'Match',
-                                maxSets: _numberOfSets,
-                                goldenPoint: _goldenPoint,
-                                team1Name: _formatTeamName(
-                                    _getInitals(_playerNameControllers[0].text),
-                                    _getInitals(
-                                        _playerNameControllers[1].text)),
-                                team2Name: _formatTeamName(
-                                    _getInitals(_playerNameControllers[2].text),
-                                    _getInitals(
-                                        _playerNameControllers[3].text)),
-                              )),
-                    );
-                    // Navigate to second route when tapped.
+                    if (_formKey.currentState!.validate()) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Scoreboard(
+                                  title: 'Match',
+                                  maxSets: _numberOfSets,
+                                  goldenPoint: _goldenPoint,
+                                  team1Name: _formatTeamName(
+                                      _getInitals(
+                                          _playerNameControllers[0].text),
+                                      _getInitals(
+                                          _playerNameControllers[1].text)),
+                                  team2Name: _formatTeamName(
+                                      _getInitals(
+                                          _playerNameControllers[2].text),
+                                      _getInitals(
+                                          _playerNameControllers[3].text)),
+                                )),
+                      );
+                    } // Navigate to second route when tapped.
                   },
                 ),
               ),
@@ -126,8 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final nameSplit = name.split(' ');
     if (nameSplit.isNotEmpty) {
       String inital = '';
-      for (int i = 0; i < nameSplit[nameSplit.length - 1].length; i++) {
-        inital += nameSplit[nameSplit.length - 1][i];
+      if (nameSplit.last.isEmpty) {
+        nameSplit.remove(nameSplit.last);
+      }
+      for (int i = 0; i < nameSplit.last.length; i++) {
+        inital += nameSplit.last[i];
         if (inital.length == 3) break;
       }
       return inital.toUpperCase();
@@ -136,7 +142,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _formatTeamName(String player1Initials, String player2Initials) {
-    return player1Initials + '/' + player2Initials;
+    if (player2Initials.isNotEmpty) {
+      return player1Initials + '/' + player2Initials;
+    } else {
+      return player1Initials;
+    }
   }
 
   Text _addTitle(String titleText, double fontSize) {
@@ -212,17 +222,35 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  TextField _addPlayerNameTextField(
-      TextEditingController nameController, String playerName) {
-    return TextField(
-      controller: nameController,
-      decoration: InputDecoration(
-        border: const OutlineInputBorder(),
-        labelText: playerName,
-        isDense: true, // Added this
-        contentPadding: const EdgeInsets.all(8), // Added this
-      ),
-    );
+  TextFormField _addPlayerNameTextField(
+      TextEditingController nameController, String playerName, bool _required) {
+    if (_required) {
+      return TextFormField(
+        controller: nameController,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter some text';
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: playerName,
+          isDense: true, // Added this
+          contentPadding: const EdgeInsets.all(8), // Added this
+        ),
+      );
+    } else {
+      return TextFormField(
+        controller: nameController,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: playerName,
+          isDense: true, // Added this
+          contentPadding: const EdgeInsets.all(8), // Added this
+        ),
+      );
+    }
   }
 
   Container _addTeamContainer(
@@ -235,9 +263,9 @@ class _MyHomePageState extends State<MyHomePage> {
       padding: const EdgeInsets.fromLTRB(30, 12, 30, 12),
       child: Column(
         children: <Widget>[
-          _addPlayerNameTextField(name1Controller, player1Name),
+          _addPlayerNameTextField(name1Controller, player1Name, true),
           _addVertPadding(10),
-          _addPlayerNameTextField(name2Controller, player2Name),
+          _addPlayerNameTextField(name2Controller, player2Name, false),
         ],
       ),
     );
