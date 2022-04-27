@@ -584,9 +584,8 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             onPressed: () {
               if (!matchFinished) {
-                //_addSet(team);
+                _removePoint(team);
               }
-              _removePoint(team);
             },
             child: const Text(
               'Remove point',
@@ -602,9 +601,8 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
             onPressed: () {
               if (!matchFinished) {
-                //_addSet(team);
+                _removeGame(team);
               }
-              _removeGame(team);
             },
             child: const Text(
               'Remove game',
