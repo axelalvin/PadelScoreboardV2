@@ -14,8 +14,19 @@ class Match {
   bool tieBreakDeuce = false;
 
   int currSet = 0;
+  late Team hadFirstServe;
+  late Team hadServeIntoTiebreak;
 
-  Match(this.maxSets, this.goldenPoint, this.team1, this.team2);
+  Match(this.maxSets, this.goldenPoint, this.team1, this.team2) {
+    team1.hasServe = true;
+    team2.hasServe = false;
+
+    if (team1.hasServe) {
+      hadFirstServe = team1;
+    } else {
+      hadFirstServe = team2;
+    }
+  }
 
   Team _getOtherTeam(Team currTeam) {
     if (currTeam == team1) {
@@ -34,6 +45,35 @@ class Match {
     }
   }
 
+  void _swapServe() {
+    team1.setServe();
+    team2.setServe();
+  }
+
+  void _setServe(Team team) {
+    if (team == team1) {
+      team1.hasServe = true;
+      team2.hasServe = false;
+    } else {
+      team1.hasServe = false;
+      team2.hasServe = true;
+    }
+  }
+
+  void _setServeAfterSet(Team team) {
+    if (team == team1) {
+      team1.hasServe = true;
+      team2.hasServe = false;
+    } else {
+      team1.hasServe = false;
+      team2.hasServe = true;
+    }
+  }
+
+  int _getTotalTieBreakScore() {
+    return team1.tieBreakScore + team2.tieBreakScore;
+  }
+
   void _addDeucePoint(Team team) {
     bool deuce = false;
     Team otherTeam = _getOtherTeam(team);
@@ -47,17 +87,13 @@ class Match {
     } else {
       if (team.gameAdv) {
         gameDeuce = false;
+        team.setGameAdv(false);
         addGame(team);
       } else {
         team.setGameAdv(false);
         otherTeam.setGameAdv(false);
       }
     }
-  }
-
-  void _swapServe() {
-    team1.setServe();
-    team2.setServe();
   }
 
   void _addDeuceGame(Team team) {
@@ -79,7 +115,11 @@ class Match {
       setDeuce = false;
     } else if (otherTeamAdv) {
       //tie break
-      _swapServe();
+      if (team.hasServe) {
+        _setServe(otherTeam);
+      } else {
+        _setServe(team);
+      }
       setDeuce = false;
       tieBreak = true;
       team.gameCount[currSet]++;
@@ -94,6 +134,16 @@ class Match {
     if (tieBreakDeuce) {
       _addTieBreakDeucePoint(team);
     } else {
+      if (_getTotalTieBreakScore().isEven) {
+        _swapServe();
+      }
+      if (_getTotalTieBreakScore() == 0) {
+        if (team.hasServe) {
+          hadServeIntoTiebreak = team;
+        } else {
+          hadServeIntoTiebreak = otherTeam;
+        }
+      }
       team.tieBreakScore++;
       team.setCurrentGameScore(team.tieBreakScore.toString());
       if (team.tieBreakScore == 7 && !tieBreakDeuce) {
@@ -112,6 +162,7 @@ class Match {
   void _addTieBreakDeucePoint(Team team) {
     bool deuce = false;
     Team otherTeam = _getOtherTeam(team);
+    _swapServe();
     if (team.getCurrentGameScore() == '6' &&
         otherTeam.getCurrentGameScore() == '6') {
       deuce = true;
@@ -143,6 +194,9 @@ class Match {
       } else {
         team.tieBreakScore--;
         team.setCurrentGameScore(team.tieBreakScore.toString());
+      }
+      if (_getTotalTieBreakScore() == 0 || _getTotalTieBreakScore().isEven) {
+        _swapServe();
       }
     }
   }
@@ -191,11 +245,12 @@ class Match {
       matchFinished = true;
     } else {
       currSet++;
-      /*if (currSet.isEven) {
-        _setServe(initServe);
+      if (currSet.isEven) {
+        _setServeAfterSet(hadFirstServe);
       } else {
-        _setServe(!initServe);
-      }*/
+        Team other = _getOtherTeam(hadFirstServe);
+        _setServeAfterSet(other);
+      }
     }
   }
 
@@ -218,16 +273,23 @@ class Match {
   }
 
   void removeGame(Team team) {
+    Team otherTeam = _getOtherTeam(team);
     if (tieBreak) {
       tieBreak = false;
       setDeuce = true;
       if (tieBreakDeuce) tieBreakDeuce = false;
       if (team.gameCount[currSet] > 0) {
         team.gameCount[currSet]--;
+        team.setCurrentGameScore('0');
+        otherTeam.setCurrentGameScore('0');
+        _setServe(hadServeIntoTiebreak);
       }
     } else {
       if (team.gameCount[currSet] > 0) {
         team.gameCount[currSet]--;
+        team.setCurrentGameScore('0');
+        otherTeam.setCurrentGameScore('0');
+        _swapServe();
       }
     }
   }
@@ -252,7 +314,8 @@ class Match {
     team1.currentGameScore = team1.scoreList[team1.scorePos].toString();
     team2.currentGameScore = team2.scoreList[team2.scorePos].toString();
 
-    //team1Serve = initServe;
+    team1.hasServe = true;
+    team2.hasServe = false;
 
     for (int i = 0; i < maxSets; i++) {
       team1.gameCount[i] = 0;

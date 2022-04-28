@@ -42,7 +42,6 @@ class _ScoreboardState extends State<Scoreboard> {
     match = Match(widget.maxSets, widget.goldenPoint, team1, team2);
 
     maxSets = widget.maxSets;
-    team1.hasServe = true;
 
     super.initState();
   }
