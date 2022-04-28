@@ -52,71 +52,173 @@ class _ScoreboardState extends State<Scoreboard> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            _addVertPadding(15),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
-              child: Table(
-                border: TableBorder.symmetric(
-                  inside: const BorderSide(width: 2, color: Colors.white),
-                ),
-                columnWidths: _initColumns(maxSets),
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: <TableRow>[
-                  TableRow(
-                    children: () {
-                      if (team1.hasServe) {
-                        return _paintColumns(maxSets, team1, Colors.yellow);
-                      } else {
-                        return _paintColumns(maxSets, team1, Colors.white);
-                      }
-                    }(),
-                  ),
-                  TableRow(
-                    children: () {
-                      if (team2.hasServe) {
-                        return _paintColumns(maxSets, team2, Colors.yellow);
-                      } else {
-                        return _paintColumns(maxSets, team2, Colors.white);
-                      }
-                    }(),
-                  ),
-                ],
+      body: OrientationBuilder(builder: (context, orientation) {
+        if (orientation == Orientation.portrait) {
+          return porttraitMode();
+        } else {
+          return landscapeMode();
+        }
+      }),
+      //porttraitMode(),
+    );
+  }
+
+  Center porttraitMode() {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          _addVertPadding(15),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
+            child: Table(
+              border: TableBorder.symmetric(
+                inside: const BorderSide(width: 2, color: Colors.white),
               ),
-            ),
-            _addVertPadding(30),
-            Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, //Center Row contents horizontally,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                _addButtons(team1),
-                _addHorizPadding(30),
-                _addButtons(team2),
+              columnWidths: _initColumns(maxSets),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: <TableRow>[
+                TableRow(
+                  children: () {
+                    if (team1.hasServe) {
+                      return _paintColumns(maxSets, team1, Colors.yellow);
+                    } else {
+                      return _paintColumns(maxSets, team1, Colors.white);
+                    }
+                  }(),
+                ),
+                TableRow(
+                  children: () {
+                    if (team2.hasServe) {
+                      return _paintColumns(maxSets, team2, Colors.yellow);
+                    } else {
+                      return _paintColumns(maxSets, team2, Colors.white);
+                    }
+                  }(),
+                ),
               ],
             ),
-            _addVertPadding(30),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: const Color.fromARGB(255, 192, 86, 78),
-              ),
-              onPressed: () {
-                setState(() {
-                  match.resetScoreboard();
-                });
-              },
-              child: const Text(
-                'Reset scoreboard',
-                style: TextStyle(
-                  color: Colors.black,
-                ),
+          ),
+          _addVertPadding(30),
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.center, //Center Row contents horizontally,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              _addButtons(team1),
+              _addHorizPadding(20),
+              _addButtons(team2),
+            ],
+          ),
+          _addVertPadding(100),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              primary: const Color.fromARGB(255, 192, 86, 78),
+            ),
+            onPressed: () {
+              setState(() {
+                match.resetScoreboard();
+              });
+            },
+            child: const Text(
+              'Reset scoreboard',
+              style: TextStyle(
+                color: Colors.black,
               ),
             ),
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          ),
+        ],
+      ),
+    );
+  }
+
+  Center landscapeMode() {
+    return Center(
+      child: Column(
+        children: <Widget>[
+          _addVertPadding(15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: Column(
+                  children: <Widget>[
+                    _addButtons(team1),
+                  ],
+                ),
+              ),
+              _addHorizPadding(20),
+              Center(
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 0.0, 15, 0.0),
+                      child: Table(
+                        border: TableBorder.symmetric(
+                          inside:
+                              const BorderSide(width: 2, color: Colors.white),
+                        ),
+                        columnWidths: _initColumns(maxSets),
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: <TableRow>[
+                          TableRow(
+                            children: () {
+                              if (team1.hasServe) {
+                                return _paintColumns(
+                                    maxSets, team1, Colors.yellow);
+                              } else {
+                                return _paintColumns(
+                                    maxSets, team1, Colors.white);
+                              }
+                            }(),
+                          ),
+                          TableRow(
+                            children: () {
+                              if (team2.hasServe) {
+                                return _paintColumns(
+                                    maxSets, team2, Colors.yellow);
+                              } else {
+                                return _paintColumns(
+                                    maxSets, team2, Colors.white);
+                              }
+                            }(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _addVertPadding(50),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color.fromARGB(255, 192, 86, 78),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          match.resetScoreboard();
+                        });
+                      },
+                      child: const Text(
+                        'Reset scoreboard',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _addHorizPadding(20),
+              Center(
+                child: Column(
+                  children: <Widget>[
+                    _addButtons(team2),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
