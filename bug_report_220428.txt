@@ -1,1 +1,3 @@
-Bug report
+Bug report:
+
+Tie break - remove point not working, remove game not working properly.
