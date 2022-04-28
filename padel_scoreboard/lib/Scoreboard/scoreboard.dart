@@ -34,6 +34,9 @@ class _ScoreboardState extends State<Scoreboard> {
 
   late int maxSets;
 
+  double buttonsWidth = 85;
+  double buttonsHeight = 85;
+
   @override
   void initState() {
     team1 = Team(1, widget.team1Name, widget.maxSets);
@@ -300,80 +303,118 @@ class _ScoreboardState extends State<Scoreboard> {
             ),
           ),
           _addVertPadding(5),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.green,
-            ),
-            onPressed: () {
-              if (!match.matchFinished) {
-                setState(() {
-                  match.addPoint(team);
-                });
-              }
-            },
-            child: const Text(
-              'Add point',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
+          const Text(
+            'Point',
           ),
-          _addVertPadding(10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: Colors.green,
-            ),
-            onPressed: () {
-              if (!match.matchFinished) {
-                setState(() {
-                  match.addGame(team);
-                });
-              }
-            },
-            child: const Text(
-              'Add game',
-              style: TextStyle(
-                color: Colors.black,
+          Row(
+            children: <Widget>[
+              SizedBox(
+                width: buttonsWidth, // <-- Your width
+                height: buttonsHeight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
+                  ),
+                  onPressed: () {
+                    if (!match.matchFinished) {
+                      setState(() {
+                        match.addPoint(team);
+                      });
+                    }
+                  },
+                  child: const Text(
+                    '+',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              _addHorizPadding(5),
+              SizedBox(
+                width: buttonsWidth, // <-- Your width
+                height: buttonsHeight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color.fromARGB(255, 192, 86, 78),
+                  ),
+                  onPressed: () {
+                    if (!match.matchFinished) {
+                      setState(() {
+                        match.removePoint(team);
+                      });
+                    }
+                  },
+                  child: const Text(
+                    '-',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          _addVertPadding(10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: const Color.fromARGB(255, 192, 86, 78),
-            ),
-            onPressed: () {
-              if (!match.matchFinished) {
-                setState(() {
-                  match.removePoint(team);
-                });
-              }
-            },
-            child: const Text(
-              'Remove point',
-              style: TextStyle(
-                color: Colors.black,
-              ),
-            ),
+          _addVertPadding(15),
+          const Text(
+            'Game',
           ),
-          _addVertPadding(10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              primary: const Color.fromARGB(255, 192, 86, 78),
-            ),
-            onPressed: () {
-              if (!match.matchFinished) {
-                setState(() {
-                  match.removeGame(team);
-                });
-              }
-            },
-            child: const Text(
-              'Remove game',
-              style: TextStyle(
-                color: Colors.black,
+          Row(
+            children: <Widget>[
+              SizedBox(
+                width: buttonsWidth, // <-- Your width
+                height: buttonsHeight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.green,
+                  ),
+                  onPressed: () {
+                    if (!match.matchFinished) {
+                      setState(() {
+                        match.addGame(team);
+                      });
+                    }
+                  },
+                  child: const Text(
+                    '+',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
               ),
-            ),
+              _addHorizPadding(5),
+              SizedBox(
+                width: buttonsWidth, // <-- Your width
+                height: buttonsHeight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color.fromARGB(255, 192, 86, 78),
+                  ),
+                  onPressed: () {
+                    if (!match.matchFinished) {
+                      setState(() {
+                        match.removeGame(team);
+                      });
+                    }
+                  },
+                  child: const Text(
+                    '-',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -382,7 +423,7 @@ class _ScoreboardState extends State<Scoreboard> {
 
   Padding _addVertPadding(double height) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
         padding: const EdgeInsets.all(0.0),
         width: 80.0,
@@ -393,7 +434,7 @@ class _ScoreboardState extends State<Scoreboard> {
 
   Padding _addHorizPadding(double width) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: Container(
         padding: const EdgeInsets.all(0.0),
         width: width,
