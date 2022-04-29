@@ -201,6 +201,17 @@ class Match {
     }
   }
 
+  void _removeSet(Team team) {
+    team.setCount--;
+    currSet--;
+    if (currSet.isEven) {
+      _setServeAfterSet(hadFirstServe);
+    } else {
+      Team other = _getOtherTeam(hadFirstServe);
+      _setServeAfterSet(other);
+    }
+  }
+
   void addPoint(Team team) {
     if (gameDeuce) {
       _addDeucePoint(team);
@@ -223,6 +234,12 @@ class Match {
     Team otherTeam = _getOtherTeam(team);
     if (setDeuce) {
       _addDeuceGame(team);
+    } else if (tieBreak) {
+      team.resetPoints();
+      otherTeam.resetPoints();
+      team.gameCount[currSet]++;
+      addSet(team);
+      tieBreak = false;
     } else {
       _swapServe();
       team.resetPoints();
@@ -290,6 +307,17 @@ class Match {
         team.setCurrentGameScore('0');
         otherTeam.setCurrentGameScore('0');
         _swapServe();
+      } else if (team.gameCount[currSet] == 0 &&
+          otherTeam.gameCount[currSet] == 0 &&
+          currSet > 0 &&
+          team.gameCount[currSet - 1] > 0) {
+        _removeSet(team);
+        if (team.gameCount[currSet] > 0) {
+          team.gameCount[currSet]--;
+          team.setCurrentGameScore('0');
+          otherTeam.setCurrentGameScore('0');
+          _swapServe();
+        }
       }
     }
   }
