@@ -50,7 +50,7 @@ class Match {
     team2.setServe();
   }
 
-  void _setServe(Team team) {
+  void setServe(Team team) {
     if (team == team1) {
       team1.hasServe = true;
       team2.hasServe = false;
@@ -116,9 +116,9 @@ class Match {
     } else if (otherTeamAdv) {
       //tie break
       if (team.hasServe) {
-        _setServe(otherTeam);
+        setServe(otherTeam);
       } else {
-        _setServe(team);
+        setServe(team);
       }
       setDeuce = false;
       tieBreak = true;
@@ -299,7 +299,7 @@ class Match {
         team.gameCount[currSet]--;
         team.setCurrentGameScore('0');
         otherTeam.setCurrentGameScore('0');
-        _setServe(hadServeIntoTiebreak);
+        setServe(hadServeIntoTiebreak);
       }
     } else {
       if (team.gameCount[currSet] > 0) {

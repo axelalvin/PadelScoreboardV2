@@ -255,7 +255,9 @@ class _ScoreboardState extends State<Scoreboard> {
 
   List<Widget>? _paintColumns(int sets, Team team, Color teamNameColor) {
     List<Widget>? list = [];
-    list.add(_paintContainer(team.teamName, Colors.blueGrey, teamNameColor));
+    //list.add(_paintContainer(team.teamName, Colors.blueGrey, teamNameColor));
+    list.add(_paintClickableInkWell(
+        team.teamName, team, Colors.blueGrey, teamNameColor));
 
     for (int i = 0; i < sets; i++) {
       list.add(_paintContainer(team.gameCount[i].toString(),
@@ -286,6 +288,35 @@ class _ScoreboardState extends State<Scoreboard> {
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  InkWell _paintClickableInkWell(
+      String text, Team team, Color? columnColor, Color? textColor) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          match.setServe(team);
+        });
+      },
+      child: Ink(
+        height: columnHeight,
+        //color: columnColor,
+        decoration: BoxDecoration(
+          color: columnColor,
+          borderRadius: const BorderRadius.all(Radius.circular(4)),
+        ),
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: textColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
