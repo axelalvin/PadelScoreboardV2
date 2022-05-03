@@ -1,10 +1,12 @@
 import 'team.dart';
 
 class Match {
-  final int maxSets;
+  int numberOfSets;
   final bool goldenPoint;
   Team team1;
   Team team2;
+
+  static int maxSets = 5;
 
   bool matchFinished = false;
 
@@ -17,7 +19,7 @@ class Match {
   late Team hadFirstServe;
   late Team hadServeIntoTiebreak;
 
-  Match(this.maxSets, this.goldenPoint, this.team1, this.team2) {
+  Match(this.numberOfSets, this.goldenPoint, this.team1, this.team2) {
     team1.hasServe = true;
     team2.hasServe = false;
 
@@ -48,16 +50,6 @@ class Match {
   void _swapServe() {
     team1.setServe();
     team2.setServe();
-  }
-
-  void setServe(Team team) {
-    if (team == team1) {
-      team1.hasServe = true;
-      team2.hasServe = false;
-    } else {
-      team1.hasServe = false;
-      team2.hasServe = true;
-    }
   }
 
   void _setServeAfterSet(Team team) {
@@ -212,6 +204,20 @@ class Match {
     }
   }
 
+  int getNumberOfSets() {
+    return numberOfSets;
+  }
+
+  void setServe(Team team) {
+    if (team == team1) {
+      team1.hasServe = true;
+      team2.hasServe = false;
+    } else {
+      team1.hasServe = false;
+      team2.hasServe = true;
+    }
+  }
+
   void addPoint(Team team) {
     if (gameDeuce) {
       _addDeucePoint(team);
@@ -258,8 +264,10 @@ class Match {
   void addSet(Team team) {
     team.setCount++;
     Team otherTeam = _getOtherTeam(team);
-    if (team.setCount + otherTeam.setCount == maxSets) {
-      matchFinished = true;
+    if (team.setCount + otherTeam.setCount == numberOfSets) {
+      //matchFinished = true;
+      //add another set?
+      numberOfSets++;
     } else {
       currSet++;
       if (currSet.isEven) {
@@ -345,7 +353,7 @@ class Match {
     team1.hasServe = true;
     team2.hasServe = false;
 
-    for (int i = 0; i < maxSets; i++) {
+    for (int i = 0; i < numberOfSets; i++) {
       team1.gameCount[i] = 0;
       team2.gameCount[i] = 0;
     }

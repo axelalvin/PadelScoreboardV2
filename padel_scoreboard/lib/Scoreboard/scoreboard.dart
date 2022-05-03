@@ -6,14 +6,14 @@ class Scoreboard extends StatefulWidget {
   const Scoreboard({
     Key? key,
     required this.title,
-    required this.maxSets,
+    required this.numberOfSets,
     required this.goldenPoint,
     required this.team1Name,
     required this.team2Name,
   }) : super(key: key);
 
   final String title;
-  final int maxSets;
+  final int numberOfSets;
   final bool goldenPoint;
   final String team1Name;
   final String team2Name;
@@ -32,19 +32,19 @@ class _ScoreboardState extends State<Scoreboard> {
   late Team team1;
   late Team team2;
 
-  late int maxSets;
+  late int _numberOfSets;
 
   double buttonsWidth = 85;
   double buttonsHeight = 85;
 
   @override
   void initState() {
-    team1 = Team(1, widget.team1Name, widget.maxSets);
-    team2 = Team(2, widget.team2Name, widget.maxSets);
+    team1 = Team(1, widget.team1Name);
+    team2 = Team(2, widget.team2Name);
 
-    match = Match(widget.maxSets, widget.goldenPoint, team1, team2);
+    match = Match(widget.numberOfSets, widget.goldenPoint, team1, team2);
 
-    maxSets = widget.maxSets;
+    _numberOfSets = widget.numberOfSets;
 
     super.initState();
   }
@@ -77,24 +77,24 @@ class _ScoreboardState extends State<Scoreboard> {
               border: TableBorder.symmetric(
                 inside: const BorderSide(width: 2, color: Colors.white),
               ),
-              columnWidths: _initColumns(maxSets),
+              columnWidths: _initColumns(_numberOfSets),
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: <TableRow>[
                 TableRow(
                   children: () {
                     if (team1.hasServe) {
-                      return _paintColumns(maxSets, team1, Colors.yellow);
+                      return _paintColumns(_numberOfSets, team1, Colors.yellow);
                     } else {
-                      return _paintColumns(maxSets, team1, Colors.white);
+                      return _paintColumns(_numberOfSets, team1, Colors.white);
                     }
                   }(),
                 ),
                 TableRow(
                   children: () {
                     if (team2.hasServe) {
-                      return _paintColumns(maxSets, team2, Colors.yellow);
+                      return _paintColumns(_numberOfSets, team2, Colors.yellow);
                     } else {
-                      return _paintColumns(maxSets, team2, Colors.white);
+                      return _paintColumns(_numberOfSets, team2, Colors.white);
                     }
                   }(),
                 ),
@@ -161,7 +161,7 @@ class _ScoreboardState extends State<Scoreboard> {
                           inside:
                               const BorderSide(width: 2, color: Colors.white),
                         ),
-                        columnWidths: _initColumns(maxSets),
+                        columnWidths: _initColumns(_numberOfSets),
                         defaultVerticalAlignment:
                             TableCellVerticalAlignment.middle,
                         children: <TableRow>[
@@ -169,10 +169,10 @@ class _ScoreboardState extends State<Scoreboard> {
                             children: () {
                               if (team1.hasServe) {
                                 return _paintColumns(
-                                    maxSets, team1, Colors.yellow);
+                                    _numberOfSets, team1, Colors.yellow);
                               } else {
                                 return _paintColumns(
-                                    maxSets, team1, Colors.white);
+                                    _numberOfSets, team1, Colors.white);
                               }
                             }(),
                           ),
@@ -180,10 +180,10 @@ class _ScoreboardState extends State<Scoreboard> {
                             children: () {
                               if (team2.hasServe) {
                                 return _paintColumns(
-                                    maxSets, team2, Colors.yellow);
+                                    _numberOfSets, team2, Colors.yellow);
                               } else {
                                 return _paintColumns(
-                                    maxSets, team2, Colors.white);
+                                    _numberOfSets, team2, Colors.white);
                               }
                             }(),
                           ),
@@ -235,6 +235,18 @@ class _ScoreboardState extends State<Scoreboard> {
         4: FixedColumnWidth(scoreColumnWidth),
         5: FixedColumnWidth(scoreColumnWidth),
         6: FixedColumnWidth(scoreColumnWidth),
+      };
+    }
+    if (sets == 4) {
+      return const <int, TableColumnWidth>{
+        0: FixedColumnWidth(nameColumnWidth),
+        1: FixedColumnWidth(scoreColumnWidth),
+        2: FixedColumnWidth(scoreColumnWidth),
+        3: FixedColumnWidth(scoreColumnWidth),
+        4: FixedColumnWidth(scoreColumnWidth),
+        5: FixedColumnWidth(scoreColumnWidth),
+        6: FixedColumnWidth(scoreColumnWidth),
+        7: FixedColumnWidth(scoreColumnWidth),
       };
     }
     if (sets == 5) {
@@ -407,6 +419,9 @@ class _ScoreboardState extends State<Scoreboard> {
                     if (!match.matchFinished) {
                       setState(() {
                         match.addGame(team);
+                        if (match.getNumberOfSets() > _numberOfSets) {
+                          _numberOfSets++;
+                        }
                       });
                     }
                   },

@@ -1,7 +1,8 @@
 class Team {
   final int id;
   final String teamName;
-  final int maxSets;
+
+  static int maxSets = 5;
 
   List<int> gameCount = [];
   int setCount = 0;
@@ -15,7 +16,7 @@ class Team {
   bool gameAdv = false;
   bool hasServe = false;
 
-  Team(this.id, this.teamName, this.maxSets) {
+  Team(this.id, this.teamName) {
     currentGameScore = scoreList[scorePos].toString();
 
     for (int i = 0; i < maxSets; i++) {

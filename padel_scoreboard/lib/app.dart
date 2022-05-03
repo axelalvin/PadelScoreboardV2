@@ -86,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                         MaterialPageRoute(
                             builder: (context) => Scoreboard(
                                   title: 'Match',
-                                  maxSets: _numberOfSets,
+                                  numberOfSets: _numberOfSets,
                                   goldenPoint: _goldenPoint,
                                   team1Name: _formatTeamName(
                                       _getInitals(
